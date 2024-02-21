@@ -1,0 +1,68 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+struct Edge {
+    int src;
+    int dest;
+    int wt;
+};
+
+void bellmanFord(vector<Edge> &Edges, int v, int e) {
+    vector<int> distance(v, INT_MAX);
+    vector<int> parent(v, -1);
+
+    distance[0] = 0;
+
+    for (int i = 0; i < v - 1; i++) {
+        for (int j = 0; j < e; j++) {
+            int U = Edges[j].src;
+            int V = Edges[j].dest;
+            int wt = Edges[j].wt;
+
+            if (distance[U] != INT_MAX && distance[U] + wt < distance[V]) {
+                distance[V] = distance[U] + wt;
+                parent[V] = U;
+            }
+        }
+    }
+
+    // Check for negative weight cycles
+    for (int j = 0; j < e; j++) {
+        int U = Edges[j].src;
+        int V = Edges[j].dest;
+        int wt = Edges[j].wt;
+        if (distance[U] != INT_MAX && distance[U] + wt < distance[V]) {
+            cout << "Graph contains a negative weight cycle!" << endl;
+            return;
+        }
+    }
+
+    for (int i = 0; i < v; i++) {
+        cout << "U --> V " << parent[i] << " -> " << i << " Cost to reach " << i << " from source 0 = " << distance[i] << endl;
+    }
+}
+
+int main() {
+    int v, e;
+
+    cout << "Enter the number of vertices and the number of edges: " << endl;
+    cin >> v >> e;
+    vector<Edge> Edges(e);
+
+    cout << "Enter the inputs for the edges:" << endl;
+    int s, d, w;
+
+    for (int i = 0; i < e; i++) {
+        cin >> s >> d >> w;
+        Edges[i].src = s;
+        Edges[i].dest = d;
+        Edges[i].wt = w;
+    }
+
+    bellmanFord(Edges, v, e);
+
+    return 0;
+}
